@@ -78,6 +78,46 @@ eval "require $mod" or die $@;
   is $req->cb->(), 'fbbq', 'callback works';
 }
 
-# TODO: build via hashref
+# construct via hashref
+{
+  my $cb = sub { 'yee haw' };
+  my $req = new_ok($mod, [{
+    method  => 'yawn',
+    uri     => 'horse://sense',
+    body    => 'by cowboy',
+    headers => {
+      wa     => 'hoo',
+      'x-wa' => 'x-hoo',
+    },
+    params  => {
+      any_old   => 'setting',
+      and_a_new => 'setting',
+    },
+    cb => $cb,
+  }]);
+
+  # this is why i'm writing this module
+  my @args = $req->args;
+  my $end = $#args;
+  is_deeply
+    [ @args[0, 1, $end] ],
+    [YAWN => 'horse://sense', $cb],
+    'first and last args built from hashref';
+
+  is_deeply
+    { @args[ 2 .. $end - 1 ] },
+    {
+      any_old   => 'setting',
+      and_a_new => 'setting',
+      body      => 'by cowboy',
+      headers   => {
+        wa     => 'hoo',
+        'x-wa' => 'x-hoo',
+      },
+    },
+    'middle params built from hashref';
+
+  is $args[-1]->(), 'yee haw', 'correct callback results';
+}
 
 done_testing;
