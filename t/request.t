@@ -5,9 +5,9 @@ use Test::More 0.88;
 my $mod = 'AnyEvent::HTTP::Request';
 eval "require $mod" or die $@;
 
-my $cb = sub { 'callback' };
-
+# basic request
 {
+  my $cb = sub { 'ugly' };
   my $req = new_ok($mod, [
     post => 'scheme://host/path',
     persistent => 1,
@@ -47,9 +47,13 @@ my $cb = sub { 'callback' };
     'outer args correct';
 
   is_deeply { @args[2 .. 7] }, $exp_params, 'params in the middle of args';
+
+  is $req->cb->(), 'ugly', 'ugly duckling';
 }
 
+# empty params
 {
+  my $cb = sub { 'fbbq' };
   my $req = new_ok($mod, [FOO => '//bar/baz', $cb]);
 
   is $req->method, 'FOO', 'request method';
@@ -70,6 +74,8 @@ my $cb = sub { 'callback' };
       },
     },
     'params contains headers';
+
+  is $req->cb->(), 'fbbq', 'callback works';
 }
 
 # TODO: build via hashref
