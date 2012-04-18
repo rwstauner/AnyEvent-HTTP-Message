@@ -64,22 +64,22 @@ sub args {
 =attr method
 
 Request method (GET, POST, etc)
-(first argument to L<AnyEvent::HTTP/http_request>).
+(first argument to L<AnyEvent::HTTP/http_request>)
 
 =attr uri
 
 Request uri (string)
-(second argument to L<AnyEvent::HTTP/http_request>).
+(second argument to L<AnyEvent::HTTP/http_request>)
 
 =attr cb
 
 Callback subroutine reference
-(last argument to L<AnyEvent::HTTP/http_request>).
+(last argument to L<AnyEvent::HTTP/http_request>)
 
 =attr params
 
 A hashref of the function parameters
-(optional middle (key => value) arguments to L<AnyEvent::HTTP/http_request>).
+(optional middle (key => value) arguments to L<AnyEvent::HTTP/http_request>)
 
 B<Note> that these are connection params like
 C<persistent> and C<timeout>,
@@ -95,12 +95,12 @@ sub params  { $_[0]->{params} ||= {} }
 =attr headers
 
 A hashref of the HTTP request headers
-(the C<headers> key of L</params>).
+(the C<headers> key of L</params>)
 
 =attr body
 
 Request content body (if any)
-(the C<body> key of L</params>).
+(the C<body> key of L</params>)
 
 =attr content
 
