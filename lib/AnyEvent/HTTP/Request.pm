@@ -114,7 +114,10 @@ my ($body, %params, %headers, $uri);
 
 =head1 SYNOPSIS
 
-  # named arguments (via hashref):
+  # parse argument list for AnyEvent::HTTP::http_request
+  AnyEvent::HTTP::Request->new(GET => $uri, %params, sub { ... });
+
+  # or use a hashref of named arguments
   AnyEvent::HTTP::Request->new({
     method  => 'POST',
     uri     => 'http://example.com',
@@ -123,9 +126,6 @@ my ($body, %params, %headers, $uri);
     headers => \%headers,
     body    => $body,
   });
-
-  # or argument list for AnyEvent::HTTP::http_request
-  AnyEvent::HTTP::Request->new(GET => $uri, %params, sub { ... });
 
 =head1 DESCRIPTION
 
