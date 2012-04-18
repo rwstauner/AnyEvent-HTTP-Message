@@ -179,4 +179,9 @@ You can then call L</send> to actually make the request
 (via L<AnyEvent::HTTP/http_request>),
 or L</args> to get the list of arguments the object would pass.
 
+=head1 TODO
+
+=for :list
+* Provide conversion to/from more featureful L<HTTP::Request>
+
 =cut

@@ -73,4 +73,9 @@ This object represents an HTTP response from L<AnyEvent::HTTP>.
 This is a companion class to L<AnyEvent::HTTP::Request>
 though it's arguably less useful since the argument list is simpler.
 
+=head1 TODO
+
+=for :list
+* Provide conversion to/from more featureful L<HTTP::Response>
+
 =cut
