@@ -34,4 +34,11 @@ foreach my $args (
   is $msg->header('fake_header'), 'fake-value', 'single header';
 }
 
+{
+  is eval { $mod->new({foo => 'bar'}); 1 }, 1, 'message created with hashref';
+
+  is eval { $mod->new( foo => 'bar' ); 1 }, undef, 'failed to create message without hashref';
+  like $@, qr/not defined a parse_args/, 'error describes missing method';
+}
+
 done_testing;

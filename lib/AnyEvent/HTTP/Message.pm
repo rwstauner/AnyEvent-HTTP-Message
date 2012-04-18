@@ -21,6 +21,14 @@ sub new {
   bless $self, $class;
 }
 
+sub parse_args {
+  my $self = shift;
+  Carp::croak( join ' ',
+    (ref($self) || $self),
+    'has not defined a parse_args() method'
+  );
+}
+
 =attr body
 
 Message content body
