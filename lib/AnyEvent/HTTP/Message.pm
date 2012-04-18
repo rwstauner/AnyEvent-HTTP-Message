@@ -21,6 +21,24 @@ sub new {
   bless $self, $class;
 }
 
+=attr body
+
+Message content body
+
+=attr content
+
+Alias for L</body>
+
+=attr headers
+
+Message headers (hashref)
+
+=cut
+
+# stubs for read-only accessors
+sub body    { $_[0]->{body}           }
+sub headers { $_[0]->{headers} ||= {} }
+
 # alias
 sub content { $_[0]->body }
 

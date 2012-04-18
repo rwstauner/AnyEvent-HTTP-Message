@@ -52,8 +52,6 @@ HTTP Response headers
 
 =cut
 
-sub body    { $_[0]->{body}    }
-sub headers { $_[0]->{headers} }
 
 1;
 
