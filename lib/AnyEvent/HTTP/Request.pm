@@ -102,6 +102,10 @@ A hashref of the HTTP request headers
 Request content body (if any)
 (the C<body> key of L</params>).
 
+=attr content
+
+Alias for L</body>
+
 =cut
 
 sub headers { $_[0]->params->{headers} ||= {} }

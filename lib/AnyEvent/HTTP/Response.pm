@@ -42,6 +42,10 @@ sub parse_args {
 
 Response content body
 
+=attr content
+
+Alias for L</body>
+
 =attr headers
 
 HTTP Response headers

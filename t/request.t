@@ -22,6 +22,7 @@ eval "require $mod" or die $@;
   is $req->method, 'POST', 'request method';
   is $req->uri, 'scheme://host/path', 'request uri';
   is $req->body, 'rub a dub', 'request content';
+  is $req->content, 'rub a dub', 'content alias';
 
   my $exp_headers = {
     'user-agent' => 'Any-Thing/0.1',
@@ -61,6 +62,7 @@ eval "require $mod" or die $@;
   is $req->cb, $cb, 'callback';
 
   is $req->body, undef, 'no content';
+  is $req->content, undef, 'content alias';
 
   is_deeply $req->params, {}, 'empty params';
   is_deeply $req->headers, {}, 'empty headers';
@@ -84,7 +86,7 @@ eval "require $mod" or die $@;
   my $req = new_ok($mod, [{
     method  => 'yawn',
     uri     => 'horse://sense',
-    body    => 'by cowboy',
+    content => 'by cowboy',
     headers => {
       wa     => 'hoo',
       'x-wa' => 'x-hoo',
@@ -95,6 +97,8 @@ eval "require $mod" or die $@;
     },
     cb => $cb,
   }]);
+
+  is $req->body, 'by cowboy', 'content init_arg converted to body';
 
   # this is why i'm writing this module
   my @args = $req->args;

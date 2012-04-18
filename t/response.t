@@ -38,6 +38,7 @@ sub test_new_response {
   my $res = new_ok($mod, $new_args);
 
   is $res->body, $body, 'body in/out';
+  is $res->content, $body, 'content alias';
   is_deeply $res->headers, { %headers }, 'headers in/out';
 
   is_deeply [ $res->args ], [ $body, { %headers } ], 'arg list';
