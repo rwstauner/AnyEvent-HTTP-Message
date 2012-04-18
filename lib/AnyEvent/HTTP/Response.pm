@@ -78,4 +78,9 @@ though it's arguably less useful since the argument list is simpler.
 =for :list
 * Provide conversion to/from more featureful L<HTTP::Response>
 
+=head1 SEE ALSO
+
+=for :list
+* L<AnyEvent::HTTP::Message> (base class)
+
 =cut

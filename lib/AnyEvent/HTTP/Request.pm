@@ -184,4 +184,9 @@ or L</args> to get the list of arguments the object would pass.
 =for :list
 * Provide conversion to/from more featureful L<HTTP::Request>
 
+=head1 SEE ALSO
+
+=for :list
+* L<AnyEvent::HTTP::Message> (base class)
+
 =cut
