@@ -41,5 +41,9 @@ sub test_new_response {
   is $res->content, $body, 'content alias';
   is_deeply $res->headers, { %headers }, 'headers in/out';
 
+  is $res->header( uc $_ ), $headers->{$_}, 'single header'
+    # skip pseudo-headers
+    for grep { /^[a-z]/ } keys %$headers;
+
   is_deeply [ $res->args ], [ $body, { %headers } ], 'arg list';
 }

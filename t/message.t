@@ -30,6 +30,8 @@ foreach my $args (
 
   is $msg->body,    'SILLY', 'body';
   is $msg->content, 'SILLY', 'content alias';
+
+  is $msg->header('fake_header'), 'fake-value', 'single header';
 }
 
 done_testing;

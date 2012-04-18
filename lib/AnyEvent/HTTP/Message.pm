@@ -42,6 +42,23 @@ sub headers { $_[0]->{headers} ||= {} }
 # alias
 sub content { $_[0]->body }
 
+=method header
+
+  my $ua  = $message->header('User-Agent');
+  # same as $message->header->{'user-agent'};
+
+Takes the specified key,
+converts C<_> to C<-> and lower-cases it,
+then returns the value of that message header.
+
+=cut
+
+sub header {
+  my ($self, $h) = @_;
+  $h =~ tr/_/-/;
+  return $self->headers->{ lc $h };
+}
+
 1;
 
 =head1 SYNOPSIS

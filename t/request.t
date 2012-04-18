@@ -30,6 +30,7 @@ eval "require $mod" or die $@;
   };
 
   is_deeply $req->headers, $exp_headers, 'request headers';
+  is $req->header('User-Agent'), 'Any-Thing/0.1', 'single header';
 
   my $exp_params = {
     persistent => 1,
@@ -99,6 +100,7 @@ eval "require $mod" or die $@;
   }]);
 
   is $req->body, 'by cowboy', 'content init_arg converted to body';
+  is $req->header('X-WA'), 'x-hoo', 'single header';
 
   # this is why i'm writing this module
   my @args = $req->args;
