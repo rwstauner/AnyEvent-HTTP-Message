@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 package AnyEvent::HTTP::Message;
-# ABSTRACT: Base class for AnyEvent::HTTP Request/Response
+# ABSTRACT: Lightweight objects for AnyEvent::HTTP Request/Response
 
 sub new {
   my $class = shift;
