@@ -8,6 +8,13 @@ package AnyEvent::HTTP::Response;
 use parent 'AnyEvent::HTTP::Message';
 use Carp ();
 
+=method args
+
+Returns a list of arguments like those passed to the callback in
+L<AnyEvent::HTTP/http_request>.
+
+=cut
+
 sub args {
   my ($self) = @_;
   return (
@@ -31,10 +38,23 @@ sub parse_args {
   return $args;
 }
 
+=attr body
+
+Response content body
+
+=attr headers
+
+HTTP Response headers
+
+=cut
+
 sub body    { $_[0]->{body}    }
 sub headers { $_[0]->{headers} }
 
 1;
+
+=for test_synopsis
+my ($body, %headers, $code);
 
 =head1 SYNOPSIS
 
@@ -47,5 +67,8 @@ sub headers { $_[0]->{headers} }
 =head1 DESCRIPTION
 
 This object represents an HTTP response from L<AnyEvent::HTTP>.
+
+This is a companion class to L<AnyEvent::HTTP::Request>
+though it's arguably less useful since the argument list is simpler.
 
 =cut
