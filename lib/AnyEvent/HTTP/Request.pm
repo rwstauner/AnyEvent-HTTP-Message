@@ -8,6 +8,21 @@ package AnyEvent::HTTP::Request;
 use parent 'AnyEvent::HTTP::Message';
 use Carp ();
 
+=class_method new
+
+See L</SYNOPSIS> for usage example.
+
+Accepts a list of arguments
+(like those that would be passed
+to
+L<AnyEvent::HTTP/http_request>)
+which will be passed through L</parse_args>.
+
+Alternatively a single hashref can be passed
+with anything listed in L</ATTRIBUTES> as the keys.
+
+=cut
+
 sub new {
   my $class = shift;
   my $self = $class->SUPER::new(@_);
@@ -23,6 +38,19 @@ sub new {
 
   return $self;
 }
+
+=class_method parse_args
+
+Called by the constructor
+to parse the argument list
+for
+L<AnyEvent::HTTP/http_request>
+and return a hashref which will be the basis for the object.
+
+The list should look like
+C<< ($method, $uri, %params, \&callback) >>.
+
+=cut
 
 sub parse_args {
   my $self = shift;

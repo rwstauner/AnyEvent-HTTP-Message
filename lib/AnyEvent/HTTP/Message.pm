@@ -5,6 +5,16 @@ use warnings;
 package AnyEvent::HTTP::Message;
 # ABSTRACT: Lightweight objects for AnyEvent::HTTP Request/Response
 
+use Carp ();
+
+=class_method new
+
+The constructor accepts either a single hashref of named arguments,
+or a specialized list of arguments that will be passed to
+a the L</parse_args> method (which must be defined by the subclass).
+
+=cut
+
 sub new {
   my $class = shift;
 
@@ -20,6 +30,16 @@ sub new {
 
   bless $self, $class;
 }
+
+
+=class_method parse_args
+
+Called by the constructor
+when L</new> is not called with a single hashref.
+
+Must be customized by subclasses.
+
+=cut
 
 sub parse_args {
   my $self = shift;
