@@ -32,7 +32,7 @@ sub parse_args {
     q[expects an odd number of arguments:],
     q[($method, $uri, (key => value, ...)*, \&callback)]
   )
-    unless @_ & 1;
+    unless @_ & 1; ## no critic BitwiseOperators
 
   my $args = {
     method => shift,
