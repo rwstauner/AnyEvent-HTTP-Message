@@ -45,8 +45,9 @@ sub parse_args {
 
 =method args
 
-Returns a list of arguments that can passed to
-L<AnyEvent::HTTP/http_request>.
+Returns a list of arguments that can be passed to
+L<AnyEvent::HTTP/http_request>
+(beware the sub's prototype, though).
 
 =cut
 
@@ -111,6 +112,20 @@ Alias for L</body>
 sub headers { $_[0]->params->{headers} ||= {} }
 sub body    { $_[0]->params->{body} }
 
+=method send
+
+Actually submit the request by passing L</args>
+to L<AnyEvent::HTTP/http_request>
+
+=cut
+
+sub send {
+  my ($self) = @_;
+  require AnyEvent::HTTP;
+  # circumvent the sub's prototype
+  &AnyEvent::HTTP::http_request( $self->args );
+}
+
 1;
 
 =for test_synopsis
@@ -160,9 +175,8 @@ It's a little less weird, and easier to maintain (and do again).
 
 This class also allows you to build an object by passing a hashref
 of named parameters in case you'd prefer that.
-You can then use the L</args> method to pass the values
-to L<AnyEvent::HTTP/http_request>:
-
-  AnyEvent::HTTP::http_request( $req->args );
+You can then call L</send> to actually make the request
+(via L<AnyEvent::HTTP/http_request>),
+or L</args> to get the list of arguments the object would pass.
 
 =cut

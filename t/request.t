@@ -5,6 +5,13 @@ use Test::More 0.88;
 my $mod = 'AnyEvent::HTTP::Request';
 eval "require $mod" or die $@;
 
+use AnyEvent::HTTP;
+no warnings 'redefine';
+local *AnyEvent::HTTP::http_request = sub ($$@) {
+  return $mod->new(@_);
+};
+use warnings;
+
 # basic request
 {
   my $cb = sub { 'ugly' };
@@ -40,7 +47,7 @@ eval "require $mod" or die $@;
 
   is_deeply $req->params, $exp_params, 'params include headers';
 
-  is_deeply $req->cb, $cb, 'callback';
+  is $req->cb, $cb, 'callback';
 
   my @args = $req->args;
   is_deeply
@@ -51,6 +58,7 @@ eval "require $mod" or die $@;
   is_deeply { @args[2 .. 7] }, $exp_params, 'params in the middle of args';
 
   is $req->cb->(), 'ugly', 'ugly duckling';
+  test_send($req);
 }
 
 # empty params
@@ -79,6 +87,7 @@ eval "require $mod" or die $@;
     'params contains headers';
 
   is $req->cb->(), 'fbbq', 'callback works';
+  test_send($req);
 }
 
 # construct via hashref
@@ -124,6 +133,16 @@ eval "require $mod" or die $@;
     'middle params built from hashref';
 
   is $args[-1]->(), 'yee haw', 'correct callback results';
+
+  test_send($req);
 }
 
 done_testing;
+
+# AE http_request overridden above
+sub test_send {
+  my $req = shift;
+  my $sent = $req->send();
+  is_deeply $sent, $req, 'object should have the same attributes';
+  ok $sent != $req, 'but be separate objects';
+}
