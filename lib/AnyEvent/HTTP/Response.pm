@@ -32,7 +32,10 @@ sub args {
   my ($self) = @_;
   return (
     $self->body,
-    $self->headers,
+    {
+      %{ $self->headers },
+      %{ $self->pseudo_headers },
+    },
   );
 }
 
@@ -47,9 +50,12 @@ and return a hashref which will be the basis for the object.
 The list should look like
 C<< ($body, \%headers) >>.
 
-This is less useful than it's counterpart
-(L<AnyEvent::HTTP::Request/parse_args>)
-but is provided for consistency/completeness.
+This will separate the "pseudo" headers
+from the regular http headers
+as described by
+L<AnyEvent::HTTP/http_request>
+(http headers are lower-cased
+and pseudo headers start with an upper case letter).
 
 =cut
 
@@ -63,8 +69,17 @@ sub parse_args {
 
   my $args  = {
     body    =>      $_[0],
-    headers => { %{ $_[1] } },
   };
+
+  my %headers = %{ $_[1] };
+  my %pseudo;
+  {
+    my @pseudo = grep { /^[A-Z]/ } keys %headers;
+    # remove the ae-http pseudo-headers (init-capped)
+    @pseudo{ @pseudo } = delete @headers{ @pseudo };
+  }
+  @$args{qw(headers pseudo_headers)} = (\%headers, \%pseudo);
+
   return $args;
 }
 
@@ -80,18 +95,28 @@ Alias for L</body>
 
 HTTP Response headers
 
+=attr pseudo_headers
+
+A hashref of extra fields L<AnyEvent::HTTP/http_request> returns in the headers
+(that start with an upper-case letter... Status, Reason, etc).
+
 =cut
 
+sub pseudo_headers { $_[0]->{pseudo_headers} ||= {} }
 
 1;
 
 =for test_synopsis
-my ($body, %headers, $code);
+my ($body, %headers, %pseudo);
 
 =head1 SYNOPSIS
 
   # named arguments (via hashref):
-  AnyEvent::HTTP::Request->new({ body => $body, headers => \%headers });
+  AnyEvent::HTTP::Request->new({
+    body    => $body,
+    headers => \%headers,
+    pseudo_headers => \%pseudo,
+  });
 
   # argument list like the callback for AnyEvent::HTTP::http_request
   AnyEvent::HTTP::Request->new($body, \%headers);
