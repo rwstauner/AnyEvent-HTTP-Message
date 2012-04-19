@@ -36,6 +36,10 @@ sub new {
       if exists $self->{$key};
   }
 
+  if( my $h = $self->{params}->{headers} ){
+    $self->{params}->{headers} = $self->_normalize_headers($h);
+  }
+
   return $self;
 }
 

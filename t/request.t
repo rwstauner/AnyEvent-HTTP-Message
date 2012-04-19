@@ -20,7 +20,7 @@ use warnings;
     persistent => 1,
     body => 'rub a dub',
     headers => {
-      'user-agent' => 'Any-Thing/0.1',
+      User_Agent   => 'Any-Thing/0.1',
       'x-duck'     => 'quack',
     },
     $cb,

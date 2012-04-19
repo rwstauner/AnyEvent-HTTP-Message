@@ -87,6 +87,17 @@ sub header {
   return $self->headers->{ lc $h };
 }
 
+sub _normalize_headers {
+  my ($self, $headers) = @_;
+  my $norm = {};
+  while( my ($k, $v) = each %$headers ){
+    my $n = $k;
+    $n =~ tr/_/-/;
+    $norm->{ lc $n } = $v;
+  }
+  return $norm;
+}
+
 1;
 
 =head1 SYNOPSIS

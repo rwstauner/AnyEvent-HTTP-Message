@@ -20,7 +20,7 @@ eval "require $mod" or die $@;
   is_deeply $res->headers, { 'x-interjection' => '3 cheers!' }, 'headers in/out';
   is_deeply $res->pseudo_headers, { Pseudo => 'Header' }, 'pseudo headers';
 
-  is $res->header( 'x-interjection' ), '3 cheers!', 'single header';
+  is $res->header( 'X_Interjection' ), '3 cheers!', 'single header';
 
   is_deeply [ $res->args ], [ $body, { %headers } ], 'arg list';
 }
@@ -38,15 +38,17 @@ eval "require $mod" or die $@;
     pseudo_headers => { Silly => 'wabbit' },
   }]);
 
+  my %norm = ('res-is' => $headers{res_is});
 
   is $res->body, $body, 'body in/out';
   is $res->content, $body, 'content alias';
-  is_deeply $res->headers, { %headers }, 'headers in/out';
+  is_deeply $res->headers, { %norm }, 'headers in/out';
   is_deeply $res->pseudo_headers, { Silly => 'wabbit' }, 'pseudo headers';
 
-  is $res->header( 'res_is' ), 'less useful than req', 'single header';
+  is $res->header( $_ ), 'less useful than req', 'single header'
+    for qw( res_is res-is RES_IS RES-IS );
 
-  is_deeply [ $res->args ], [ $body, { %headers, Silly => 'wabbit' } ], 'arg list';
+  is_deeply [ $res->args ], [ $body, { %norm, Silly => 'wabbit' } ], 'arg list';
 }
 
 done_testing;
