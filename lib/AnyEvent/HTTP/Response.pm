@@ -138,8 +138,7 @@ my ($body, %headers, %pseudo);
 
 This object represents an HTTP response from L<AnyEvent::HTTP>.
 
-This is a companion class to L<AnyEvent::HTTP::Request>
-though it's arguably less useful since the argument list is simpler.
+This is a companion class to L<AnyEvent::HTTP::Request>.
 
 =head1 TODO
 
