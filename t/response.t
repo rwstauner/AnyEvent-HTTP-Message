@@ -13,7 +13,16 @@ eval "require $mod" or die $@;
     'x-interjection' => '3 cheers!'
   );
 
-  test_new_response($body, { %headers }, [$body, { %headers }]);
+  my $res = new_ok($mod, [$body, { %headers }]);
+
+  is $res->body, $body, 'body in/out';
+  is $res->content, $body, 'content alias';
+  is_deeply $res->headers, { 'x-interjection' => '3 cheers!' }, 'headers in/out';
+  is_deeply $res->pseudo_headers, { Pseudo => 'Header' }, 'pseudo headers';
+
+  is $res->header( 'x-interjection' ), '3 cheers!', 'single header';
+
+  is_deeply [ $res->args ], [ $body, { %headers } ], 'arg list';
 }
 
 # args via hashref
@@ -23,27 +32,21 @@ eval "require $mod" or die $@;
     res_is => 'less useful than req'
   );
 
-  test_new_response($body, { %headers }, [{
+  my $res = new_ok($mod, [{
     headers => { %headers },
     body => $body,
+    pseudo_headers => { Silly => 'wabbit' },
   }]);
-}
 
-done_testing;
-
-sub test_new_response {
-  my ($body, $headers, $new_args) = @_;
-  my %headers = %$headers;
-
-  my $res = new_ok($mod, $new_args);
 
   is $res->body, $body, 'body in/out';
   is $res->content, $body, 'content alias';
   is_deeply $res->headers, { %headers }, 'headers in/out';
+  is_deeply $res->pseudo_headers, { Silly => 'wabbit' }, 'pseudo headers';
 
-  is $res->header( uc $_ ), $headers->{$_}, 'single header'
-    # skip pseudo-headers
-    for grep { /^[a-z]/ } keys %$headers;
+  is $res->header( 'res_is' ), 'less useful than req', 'single header';
 
-  is_deeply [ $res->args ], [ $body, { %headers } ], 'arg list';
+  is_deeply [ $res->args ], [ $body, { %headers, Silly => 'wabbit' } ], 'arg list';
 }
+
+done_testing;
