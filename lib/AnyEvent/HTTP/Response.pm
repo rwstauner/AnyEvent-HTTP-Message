@@ -110,8 +110,9 @@ HTTP Response headers
 
 =attr pseudo_headers
 
-A hashref of extra fields L<AnyEvent::HTTP/http_request> returns in the headers
-(that start with an upper-case letter... Status, Reason, etc).
+A hashref of extra fields
+that L<AnyEvent::HTTP/http_request> returns with the http headers
+(the ones that start with an upper-case letter... Status, Reason, etc).
 
 =cut
 
