@@ -31,6 +31,11 @@ sub new {
   bless $self, $class;
 }
 
+sub _error {
+  my $self = shift;
+  @_ = join ' ', (ref($self) || $self), 'error:', @_;
+  goto &Carp::croak;
+}
 
 =class_method parse_args
 
@@ -42,11 +47,7 @@ Must be customized by subclasses.
 =cut
 
 sub parse_args {
-  my $self = shift;
-  Carp::croak( join ' ',
-    (ref($self) || $self),
-    'has not defined a parse_args() method'
-  );
+  $_[0]->_error('parse_args() is not defined');
 }
 
 =attr body

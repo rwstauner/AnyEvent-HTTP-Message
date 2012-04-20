@@ -6,7 +6,6 @@ package AnyEvent::HTTP::Response;
 # ABSTRACT: HTTP Response object for AnyEvent::HTTP
 
 use parent 'AnyEvent::HTTP::Message';
-use Carp ();
 
 =class_method new
 
@@ -74,9 +73,8 @@ and pseudo headers start with an upper case letter).
 
 sub parse_args {
   my $self = shift;
-  Carp::croak(
-    (ref($self) || $self) .
-    q[ expects two arguments: ($content_body, \%headers)]
+  $self->_error(
+    q[expects two arguments: ($content_body, \%headers)]
   )
     unless @_ == 2;
 

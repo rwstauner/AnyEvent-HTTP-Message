@@ -35,10 +35,17 @@ foreach my $args (
 }
 
 {
+  my $line = __LINE__; is eval { $tmod->_error("BOO") }, undef, 'croaked';
+  like $@,
+    qr/$tmod error: BOO at ${\__FILE__} line $line/,
+    'custom error message';
+}
+
+{
   is eval { $mod->new({foo => 'bar'}); 1 }, 1, 'message created with hashref';
 
   is eval { $mod->new( foo => 'bar' ); 1 }, undef, 'failed to create message without hashref';
-  like $@, qr/not defined a parse_args/, 'error describes missing method';
+  like $@, qr/parse_args\(\) is not defined/, 'error describes missing method';
 }
 
 done_testing;

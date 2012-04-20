@@ -2,8 +2,7 @@ Revision history for AnyEvent-HTTP-Message
 
 {{$NEXT}}
 
-  - Fix module name typo when parse_args throws an error.
-    (While "Crap" would be an appropriate name, it's actually "Carp".)
+  - Fix error messages when parse_args gets the wrong number of arguments.
 
 0.100     2012-04-19T01:28:25Z
 

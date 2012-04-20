@@ -6,7 +6,6 @@ package AnyEvent::HTTP::Request;
 # ABSTRACT: HTTP Request object for AnyEvent::HTTP
 
 use parent 'AnyEvent::HTTP::Message';
-use Carp ();
 
 =class_method new
 
@@ -59,8 +58,7 @@ C<< ($method, $uri, %params, \&callback) >>.
 sub parse_args {
   my $self = shift;
 
-  Carp::croak( join ' ',
-    (ref($self) || $self),
+  $self->_error(
     q[expects an odd number of arguments:],
     q[($method, $uri, (key => value, ...)*, \&callback)]
   )
