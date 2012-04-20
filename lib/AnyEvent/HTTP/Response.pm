@@ -74,7 +74,7 @@ and pseudo headers start with an upper case letter).
 
 sub parse_args {
   my $self = shift;
-  Crap::croak(
+  Carp::croak(
     (ref($self) || $self) .
     q[ expects two arguments: ($content_body, \%headers)]
   )

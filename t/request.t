@@ -12,6 +12,12 @@ local *AnyEvent::HTTP::http_request = sub ($$@) {
 };
 use warnings;
 
+# parse_args error
+foreach my $args ( [], [1,2], [1,2,3,4] ){
+  is eval { $mod->parse_args(@$args) }, undef, 'wrong number of args';
+  like $@, qr/expects an odd number of arguments/, 'error message';
+}
+
 # basic request
 {
   my $cb = sub { 'ugly' };

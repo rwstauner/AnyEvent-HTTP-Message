@@ -5,6 +5,12 @@ use Test::More 0.88;
 my $mod = 'AnyEvent::HTTP::Response';
 eval "require $mod" or die $@;
 
+# parse_args error
+foreach my $args ( [1], [1,2,3] ){
+  is eval { $mod->parse_args(@$args) }, undef, 'wrong number of args';
+  like $@, qr/expects two arguments/, 'error message';
+}
+
 # not much to test here, just order of args
 {
   my $body = "black\nparade";

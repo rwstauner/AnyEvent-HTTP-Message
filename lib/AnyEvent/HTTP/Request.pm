@@ -59,7 +59,7 @@ C<< ($method, $uri, %params, \&callback) >>.
 sub parse_args {
   my $self = shift;
 
-  Crap::croak( join ' ',
+  Carp::croak( join ' ',
     (ref($self) || $self),
     q[expects an odd number of arguments:],
     q[($method, $uri, (key => value, ...)*, \&callback)]
