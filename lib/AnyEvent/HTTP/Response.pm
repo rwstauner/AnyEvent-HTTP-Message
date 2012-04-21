@@ -123,15 +123,16 @@ my ($body, %headers, %pseudo);
 
 =head1 SYNOPSIS
 
+  # argument list like the callback for AnyEvent::HTTP::http_request
+  AnyEvent::HTTP::Response->new($body, \%headers);
+
   # named arguments (via hashref):
-  AnyEvent::HTTP::Request->new({
+  AnyEvent::HTTP::Response->new({
     body    => $body,
     headers => \%headers,
     pseudo_headers => \%pseudo,
   });
 
-  # argument list like the callback for AnyEvent::HTTP::http_request
-  AnyEvent::HTTP::Request->new($body, \%headers);
 
 =head1 DESCRIPTION
 
