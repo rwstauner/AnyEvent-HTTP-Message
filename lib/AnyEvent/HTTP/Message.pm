@@ -6,23 +6,40 @@ package AnyEvent::HTTP::Message;
 # ABSTRACT: Lightweight objects for AnyEvent::HTTP Request/Response
 
 use Carp ();
+use Scalar::Util ();
 
 =class_method new
 
-The constructor accepts either a single hashref of named arguments,
-or a specialized list of arguments that will be passed to
-a the L</parse_args> method (which must be defined by the subclass).
+The constructor accepts either:
+
+=for :list
+* a single hashref of named arguments
+* an instance of an appropriate subclass of L<HTTP::Message>
+* or a specialized list of arguments that will be passed to L</parse_args> (which must be defined by the subclass).
 
 =cut
 
 sub new {
   my $class = shift;
 
-  my $self = @_ == 1 && ref($_[0]) eq 'HASH'
+  my $self;
+  if( @_ == 1 ){
+    my $arg = $_[0];
+    if( ref($arg) eq 'HASH' ){
       # if passed a single hashref take a shallow copy
-    ? { %{ $_[0] } }
+      $self = { %$arg };
+    }
+    elsif( Scalar::Util::blessed($arg) && $arg->isa('HTTP::Message') ){
+      $self = $class->from_http_message($arg);
+    }
+    else {
+      $class->_error(sprintf qq[Invalid argument: '%s'], ref($arg) || $arg);
+    }
+  }
+  else {
       # otherwise it's the argument list for http_request()
-    : $class->parse_args(@_);
+    $self = $class->parse_args(@_);
+  }
 
   # accept 'content' as an alias for 'body', but store as 'body'
   $self->{body} = delete $self->{content}
@@ -40,7 +57,7 @@ sub _error {
 =class_method parse_args
 
 Called by the constructor
-when L</new> is not called with a single hashref.
+when L</new> is called with a list of arguments.
 
 Must be customized by subclasses.
 
@@ -48,6 +65,20 @@ Must be customized by subclasses.
 
 sub parse_args {
   $_[0]->_error('parse_args() is not defined');
+}
+
+=class_method from_http_message
+
+Called by the constructor
+when L</new> is called with a single argument that is
+an instance of a L<HTTP::Message> subclass.
+
+Must be customized by subclasses.
+
+=cut
+
+sub from_http_message {
+  $_[0]->_error('from_http_message() is not defined');
 }
 
 =attr body
