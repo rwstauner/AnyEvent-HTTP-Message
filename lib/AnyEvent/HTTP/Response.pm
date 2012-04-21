@@ -108,15 +108,18 @@ sub from_http_message {
     pseudo_headers => {
       Status => $res->code,
       Reason => $res->message,
-      HTTPVersion => ($res->protocol =~ /HTTP\/([0-9.]+)/)[0]
     },
   };
+  if( my $proto = $res->protocol ){
+    # regexp taken straight from AnyEvent::HTTP 2.13
+    $args->{pseudo_headers}{HTTPVersion} = ($proto =~ /^HTTP\/0*([0-9\.]+)/)[0];
+  }
 
   my $aeh = $args->{headers} = {};
   $res->headers->scan(sub {
     my ($k, $v) = @_;
     my $l = lc $k;
-    $aeh->{$k} = exists($aeh->{$l}) ? $aeh->{$l} . ',' . $v : $v;
+    $aeh->{$l} = exists($aeh->{$l}) ? $aeh->{$l} . ',' . $v : $v;
   });
 
   return $args;
