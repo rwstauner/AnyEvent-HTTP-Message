@@ -94,6 +94,34 @@ sub parse_args {
   return $args;
 }
 
+=class_method from_http_message
+
+Called by the constructor
+when L</new> is passed an instance of L<HTTP::Response>.
+
+=cut
+
+sub from_http_message {
+  my ($self, $res) = @_;
+  my $args = {
+    body => $res->${\ ($res->can('decoded_content') || 'content') },
+    pseudo_headers => {
+      Status => $res->code,
+      Reason => $res->message,
+      HTTPVersion => ($res->protocol =~ /HTTP\/([0-9.]+)/)[0]
+    },
+  };
+
+  my $aeh = $args->{headers} = {};
+  $res->headers->scan(sub {
+    my ($k, $v) = @_;
+    my $l = lc $k;
+    $aeh->{$k} = exists($aeh->{$l}) ? $aeh->{$l} . ',' . $v : $v;
+  });
+
+  return $args;
+}
+
 =attr body
 
 Response content body
@@ -116,6 +144,28 @@ that L<AnyEvent::HTTP/http_request> returns with the http headers
 
 sub pseudo_headers { $_[0]->{pseudo_headers} ||= {} }
 
+=method to_http_message
+
+Returns an instance of L<HTTP::Response>
+to provide additional functionality.
+
+=cut
+
+sub to_http_message {
+  my ($self) = @_;
+  require HTTP::Response;
+
+  my $res = HTTP::Response->new(
+    @{ $self->pseudo_headers }{qw(Status Reason)},
+    [ %{ $self->headers } ],
+    $self->body
+  );
+  if( my $v = $self->pseudo_headers->{HTTPVersion} ){
+    $res->protocol("HTTP/$v")
+  }
+  return $res;
+}
+
 1;
 
 =for test_synopsis
@@ -133,6 +183,19 @@ my ($body, %headers, %pseudo);
     pseudo_headers => \%pseudo,
   });
 
+  # from LWP's HTTP::Response
+  use HTTP::Response;
+  AnyEvent::HTTP::Response->new(
+    HTTP::Response->new( $code, $reason, [header => 'value', ], $body )
+  );
+
+  # psgi
+  use HTTP::Message::PSGI;
+  AnyEvent::HTTP::Response->new(
+    HTTP::Response->from_psgi(
+      [$code, [header => 'value', ], [$body]]
+    )
+  );
 
 =head1 DESCRIPTION
 
@@ -140,14 +203,11 @@ This object represents an HTTP response from L<AnyEvent::HTTP>.
 
 This is a companion class to L<AnyEvent::HTTP::Request>.
 
-=head1 TODO
-
-=for :list
-* Provide conversion to/from more featureful L<HTTP::Response>
-
 =head1 SEE ALSO
 
 =for :list
 * L<AnyEvent::HTTP::Message> (base class)
+* L<HTTP::Response> More featureful object
+* L<HTTP::Message::PSGI> Create an L<HTTP::Response> from a L<PSGI> arrayref
 
 =cut
