@@ -9,18 +9,28 @@ use parent 'AnyEvent::HTTP::Message';
 
 =class_method new
 
-See L</SYNOPSIS> for usage example.
+Accepts an argument list like the callback provided to
+L<AnyEvent::HTTP/http_request>
+(see L</parse_args>):
 
-Accepts a list of arguments
-(like those that would be passed
-to the callback in
-L<AnyEvent::HTTP/http_request>)
-which will be passed through L</parse_args>.
+  AnyEvent::HTTP::Response->new($body, \%headers);
 
-Alternatively a single hashref can be passed
-with anything listed in L</ATTRIBUTES> as the keys.
+Alternatively accepts an instance of
+L<HTTP::Response>
+(see L</from_http_message>):
 
+  AnyEvent::HTTP::Response->new(
+    HTTP::Response->new( $code, $reason, $headers, $body )
+  );
 
+Also accepts a single hashref of named attributes
+(see L</ATTRIBUTES>):
+
+  AnyEvent::HTTP::Response->new({
+    body    => $body,
+    headers => \%headers,
+    pseudo_headers => \%pseudo,
+  });
 
 =method args
 
@@ -155,32 +165,25 @@ sub to_http_message {
 1;
 
 =for test_synopsis
-my ($body, %headers, %pseudo);
+my ($uri);
 
 =head1 SYNOPSIS
 
-  # argument list like the callback for AnyEvent::HTTP::http_request
-  AnyEvent::HTTP::Response->new($body, \%headers);
+  AnyEvent::HTTP::http_request(
+    GET => $uri,
+    sub {
+      my $res = AnyEvent::HTTP::Response->new(@_);
 
-  # named arguments (via hashref):
-  AnyEvent::HTTP::Response->new({
-    body    => $body,
-    headers => \%headers,
-    pseudo_headers => \%pseudo,
-  });
+      # inspect attributes
+      print $res->header('Content-Type');
+      print $res->body;
 
-  # from LWP's HTTP::Response
-  use HTTP::Response;
-  AnyEvent::HTTP::Response->new(
-    HTTP::Response->new( $code, $reason, [header => 'value', ], $body )
-  );
-
-  # psgi
-  use HTTP::Message::PSGI;
-  AnyEvent::HTTP::Response->new(
-    HTTP::Response->from_psgi(
-      [$code, [header => 'value', ], [$body]]
-    )
+      # upgrade to HTTP::Response
+      my $http_res = $res->to_http_message;
+      if( !$http_res->is_success ){
+        print $http_res->status_line;
+      }
+    }
   );
 
 =head1 DESCRIPTION
@@ -189,9 +192,20 @@ This object represents an HTTP response from L<AnyEvent::HTTP>.
 
 This is a companion class to L<AnyEvent::HTTP::Request>.
 
+It parses the arguments passed to the final callback in
+L<AnyEvent::HTTP/http_request>
+(or produces the arguments that should be passed to that,
+depending on how you'd like to use it).
+and wraps them in an object.
+
+It can also be converted L<from|/from_http_message> or L<to|/to_http_message>
+the more featureful
+L<HTTP::Response>.
+
 =head1 SEE ALSO
 
 =for :list
+* L<AnyEvent::HTTP>
 * L<AnyEvent::HTTP::Message> (base class)
 * L<HTTP::Response> More featureful object
 * L<HTTP::Message::PSGI> Create an L<HTTP::Response> from a L<PSGI> arrayref

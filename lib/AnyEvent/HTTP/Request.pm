@@ -9,16 +9,42 @@ use parent 'AnyEvent::HTTP::Message';
 
 =class_method new
 
-See L</SYNOPSIS> for usage example.
+Accepts the same argument list as
+L<AnyEvent::HTTP/http_request>
+(see L</parse_args>):
 
-Accepts a list of arguments
-(like those that would be passed
-to
-L<AnyEvent::HTTP/http_request>)
-which will be passed through L</parse_args>.
+  AnyEvent::HTTP::Request->new(
+    $method => $uri,
+    body    => $body,
+    headers => \%headers,
+    %params,
+    sub { ... }
+  );
 
-Alternatively a single hashref can be passed
-with anything listed in L</ATTRIBUTES> as the keys.
+Alternatively accepts an instance of
+L<HTTP::Request>
+with an optional hashref of extra attributes
+(see L</from_http_message>):
+
+  AnyEvent::HTTP::Request->new(
+    HTTP::Request->new( $method, $uri, $headers, $body ),
+    {
+      cb => sub { ... },
+      params => \%params,
+    }
+  );
+
+Also accepts a single hashref of named attributes
+(see L</ATTRIBUTES>):
+
+  AnyEvent::HTTP::Request->new({
+    method  => 'POST',
+    uri     => 'http://example.com',
+    cb      => sub { ... },
+    params  => \%params,
+    headers => \%headers,
+    body    => $body,
+  });
 
 =cut
 
@@ -203,22 +229,25 @@ sub to_http_message {
 1;
 
 =for test_synopsis
-my ($body, %params, %headers, $uri);
+my ($uri, $body, %headers, %params);
 
 =head1 SYNOPSIS
 
-  # parse argument list for AnyEvent::HTTP::http_request
-  AnyEvent::HTTP::Request->new(GET => $uri, %params, sub { ... });
-
-  # or use a hashref of named arguments
-  AnyEvent::HTTP::Request->new({
-    method  => 'POST',
-    uri     => 'http://example.com',
-    cb      => sub { ... },
-    params  => \%params,
+  # parses the same argument list as AnyEvent::HTTP::http_request:
+  my $req = AnyEvent::HTTP::Request->new(
+    POST => $uri,
+    body => $body,
     headers => \%headers,
-    body    => $body,
-  });
+    %params,
+    sub { .. }
+  );
+
+  # provides introspection
+  $req->header('user-agent');
+  printf STDERR "URI: %s\n", $req->uri;
+
+  # can be upgraded to an HTTP::Request object:
+  my $http_req = $req->to_http_message;
 
 =head1 DESCRIPTION
 
@@ -260,6 +289,7 @@ L<HTTP::Request>.
 =head1 SEE ALSO
 
 =for :list
+* L<AnyEvent::HTTP>
 * L<AnyEvent::HTTP::Message> (base class)
 * L<HTTP::Request> - More featureful object
 
