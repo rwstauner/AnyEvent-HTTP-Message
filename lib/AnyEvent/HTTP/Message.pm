@@ -14,7 +14,7 @@ The constructor accepts either:
 
 =for :list
 * a single hashref of named arguments
-* an instance of an appropriate subclass of L<HTTP::Message>
+* an instance of an appropriate subclass of L<HTTP::Message> (with an optional hashref of additional parameters)
 * or a specialized list of arguments that will be passed to L</parse_args> (which must be defined by the subclass).
 
 =cut
@@ -23,18 +23,13 @@ sub new {
   my $class = shift;
 
   my $self;
-  if( @_ == 1 ){
-    my $arg = $_[0];
-    if( ref($arg) eq 'HASH' ){
-      # if passed a single hashref take a shallow copy
-      $self = { %$arg };
-    }
-    elsif( Scalar::Util::blessed($arg) && $arg->isa('HTTP::Message') ){
-      $self = $class->from_http_message($arg);
-    }
-    else {
-      $class->_error(sprintf qq[Invalid argument: '%s'], ref($arg) || $arg);
-    }
+  if( ref($_[0]) eq 'HASH' ){
+    # if passed a single hashref take a shallow copy
+    $self = { %{ $_[0] } };
+  }
+  elsif( Scalar::Util::blessed($_[0]) && $_[0]->isa('HTTP::Message') ){
+    # allow an optional second hashref for extra params
+    $self = $class->from_http_message(@_);
   }
   else {
       # otherwise it's the argument list for http_request()
@@ -57,7 +52,8 @@ sub _error {
 =class_method parse_args
 
 Called by the constructor
-when L</new> is called with a list of arguments.
+when L</new> is called with
+a list of arguments.
 
 Must be customized by subclasses.
 
@@ -70,7 +66,7 @@ sub parse_args {
 =class_method from_http_message
 
 Called by the constructor
-when L</new> is called with a single argument that is
+when L</new> is called with
 an instance of a L<HTTP::Message> subclass.
 
 Must be customized by subclasses.

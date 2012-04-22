@@ -67,12 +67,6 @@ foreach my $args (
   test_new [  foo => 'bar' ], q/parse_args\(\) is not defined/,
     'fails when custom parse_args() not defined';
 
-  test_new [ \'oops' ], q/Invalid argument: 'SCALAR'/,
-    'fails with unknown single argument';
-
-  test_new [ bless [], 'Stinky' ], q/Invalid argument: 'Stinky'/,
-    'fails with unknown single argument';
-
   # we should be able to test this failure without the real HTTP::Message
   {
     my $msg = $httpm->new();
