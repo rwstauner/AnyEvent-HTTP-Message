@@ -239,7 +239,7 @@ my ($uri, $body, %headers, %params);
     body => $body,
     headers => \%headers,
     %params,
-    sub { .. }
+    sub { ... }
   );
 
   # provides introspection
