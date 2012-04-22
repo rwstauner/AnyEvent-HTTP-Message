@@ -81,6 +81,18 @@ sub from_http_message {
   $_[0]->_error('from_http_message() is not defined');
 }
 
+# turn HTTP::Headers into a hashref
+sub _hash_http_headers {
+  my ($self, $headers) = @_;
+  my $aeh = {};
+  $headers->scan(sub {
+    my ($k, $v) = @_;
+    my $l = lc $k;
+    $aeh->{$l} = exists($aeh->{$l}) ? $aeh->{$l} . ',' . $v : $v;
+  });
+  return $aeh;
+}
+
 =attr body
 
 Message content body
