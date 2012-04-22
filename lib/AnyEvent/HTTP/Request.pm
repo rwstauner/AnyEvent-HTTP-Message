@@ -243,11 +243,14 @@ my ($uri, $body, %headers, %params);
   );
 
   # provides introspection
-  $req->header('user-agent');
-  printf STDERR "URI: %s\n", $req->uri;
+  print $req->header('user-agent');
+  print $req->uri;
 
   # can be upgraded to an HTTP::Request object
   my $http_req = $req->to_http_message;
+
+  # or submitted via AnyEvent::HTTP::http_request
+  $req->send();
 
 =head1 DESCRIPTION
 
