@@ -26,6 +26,7 @@ foreach my $args ( [], [1,2], [1,2,3,4] ){
   my $req = new_ok($mod, [
     post => 'scheme://host/path',
     persistent => 1,
+    timeout => 3,
     body => 'rub a dub',
     headers => {
       User_Agent   => 'Any-Thing/0.1',
@@ -49,8 +50,7 @@ foreach my $args ( [], [1,2], [1,2,3,4] ){
 
   my $exp_params = {
     persistent => 1,
-    headers => $exp_headers,
-    body => 'rub a dub',
+    timeout => 3,
   };
 
   is_deeply $req->params, $exp_params, 'params include headers';
@@ -59,11 +59,18 @@ foreach my $args ( [], [1,2], [1,2,3,4] ){
 
   my @args = $req->args;
   is_deeply
-    [ @args[0,1,8] ],
+    [ @args[0, 1, 10] ],
     [ POST => 'scheme://host/path', $cb ],
     'outer args correct';
 
-  is_deeply { @args[2 .. 7] }, $exp_params, 'params in the middle of args';
+  is_deeply
+    { @args[2 .. 9] },
+    {
+      headers => $exp_headers,
+      body    => 'rub a dub',
+      %$exp_params,
+    },
+    'params in the middle of args';
 
   is $req->cb->(), 'ugly', 'ugly duckling';
   test_send($req);
@@ -93,14 +100,8 @@ foreach my $args ( [], [1,2], [1,2,3,4] ){
   is_deeply $req->headers, {}, 'empty headers';
 
   $req->headers->{qux} = 42;
-  is_deeply
-    $req->params,
-    {
-      headers => {
-        qux => 42,
-      },
-    },
-    'params contains headers';
+  is_deeply $req->params, {}, 'params still empty (headers not included)';
+  is_deeply $req->headers, {qux => 42}, 'headers no longer empty';
 
   is $req->cb->(), 'fbbq', 'callback works';
   test_send($req);

@@ -28,17 +28,6 @@ sub new {
 
   $self->{method} = uc $self->{method};
 
-  # allow these to be constructor arguments
-  # but store them in params to keep things simple
-  foreach my $key ( qw( body headers ) ){
-    $self->{params}->{$key} = delete $self->{$key}
-      if exists $self->{$key};
-  }
-
-  if( my $h = $self->{params}->{headers} ){
-    $self->{params}->{headers} = $self->_normalize_headers($h);
-  }
-
   return $self;
 }
 
@@ -51,7 +40,11 @@ L<AnyEvent::HTTP/http_request>
 and return a hashref which will be the basis for the object.
 
 The list should look like
-C<< ($method, $uri, %params, \&callback) >>.
+C<< ($method, $uri, %optional, \&callback) >>
+where the C<%optional> hash may include C<body>, C<headers>,
+and any of the other options accepted by
+L<AnyEvent::HTTP/http_request>
+(which will become L</params>).
 
 =cut
 
@@ -70,6 +63,11 @@ sub parse_args {
     cb     => pop,
     params => { @_ },
   };
+
+  # remove these from params
+  $args->{$_} = delete $args->{params}{$_}
+    for qw( body headers );
+
   return $args;
 }
 
@@ -109,6 +107,8 @@ sub args {
   my ($self) = @_;
   return (
     $self->method => $self->uri,
+    body    => $self->body,
+    headers => $self->headers,
     %{ $self->params },
     $self->cb,
   );
@@ -140,6 +140,9 @@ B<Note> that these are connection params like
 C<persistent> and C<timeout>,
 not query params like in C<CGI>.
 
+B<Note> that C<body> and C<headers> will not be included,
+these are essentially I<user-agent> parameters.
+
 =cut
 
 sub method  { $_[0]->{method} }
@@ -150,21 +153,14 @@ sub params  { $_[0]->{params} ||= {} }
 =attr headers
 
 A hashref of the HTTP request headers
-(the C<headers> key of L</params>)
 
 =attr body
 
-Request content body (if any)
-(the C<body> key of L</params>)
+Request content body
 
 =attr content
 
 Alias for L</body>
-
-=cut
-
-sub headers { $_[0]->params->{headers} ||= {} }
-sub body    { $_[0]->params->{body} }
 
 =method send
 
@@ -185,8 +181,9 @@ sub send {
 Returns an instance of L<HTTP::Request>
 to provide additional functionality.
 
-B<Note> that the L</cb> will not be included in the L<HTTP::Request> object
-(nor any L</params> that are not part of the actual request message).
+B<Note> that L</cb> and L</params>
+will not be represented in the L<HTTP::Request> object
+(since they are for the user-agent and not the request).
 
 =cut
 

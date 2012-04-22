@@ -20,18 +20,7 @@ which will be passed through L</parse_args>.
 Alternatively a single hashref can be passed
 with anything listed in L</ATTRIBUTES> as the keys.
 
-=cut
 
-sub new {
-  my $class = shift;
-  my $self = $class->SUPER::new(@_);
-
-  if( my $h = $self->{headers} ){
-    $self->{headers} = $self->_normalize_headers($h);
-  }
-
-  return $self;
-}
 
 =method args
 

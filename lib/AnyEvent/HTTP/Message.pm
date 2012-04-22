@@ -40,6 +40,10 @@ sub new {
   $self->{body} = delete $self->{content}
     if exists $self->{content};
 
+  $self->{headers} = $self->{headers}
+    ? $class->_normalize_headers($self->{headers})
+    : {};
+
   bless $self, $class;
 }
 
