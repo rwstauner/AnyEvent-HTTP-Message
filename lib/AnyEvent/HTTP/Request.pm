@@ -102,10 +102,10 @@ sub parse_args {
 Called by the constructor
 when L</new> is passed an instance of L<HTTP::Request>.
 
-Since only L</method>, L</uri>, L</headers>, and L</body>
+Since only C<method>, C<uri>, C<headers>, and C<body>
 can be determined from L<HTTP::Request>,
 a hashref can be passed as a second parameter
-containing L</cb> and L</params>.
+containing C<cb> and C<params>.
 
 =cut
 
@@ -152,10 +152,17 @@ Request method (GET, POST, etc)
 Request uri (string)
 (second argument to L<AnyEvent::HTTP/http_request>)
 
-=attr cb
+=attr body
 
-Callback subroutine reference
-(last argument to L<AnyEvent::HTTP/http_request>)
+Request content body
+
+=attr content
+
+Alias for L</body>
+
+=attr headers
+
+A hashref of the HTTP request headers
 
 =attr params
 
@@ -166,8 +173,13 @@ B<Note> that these are connection params like
 C<persistent> and C<timeout>,
 not query params like in C<CGI>.
 
-B<Note> that C<body> and C<headers> will not be included,
-these are essentially I<user-agent> parameters.
+B<Note> that C<body> and C<headers> will not be included.
+This hashref is essentially I<user-agent> parameters.
+
+=attr cb
+
+Callback subroutine reference
+(last argument to L<AnyEvent::HTTP/http_request>)
 
 =cut
 
@@ -175,18 +187,6 @@ sub method  { $_[0]->{method} }
 sub uri     { $_[0]->{uri}    }
 sub cb      { $_[0]->{cb}     }
 sub params  { $_[0]->{params} ||= {} }
-
-=attr headers
-
-A hashref of the HTTP request headers
-
-=attr body
-
-Request content body
-
-=attr content
-
-Alias for L</body>
 
 =method send
 
