@@ -73,6 +73,30 @@ sub parse_args {
   return $args;
 }
 
+=class_method from_http_message
+
+Called by the constructor
+when L</new> is passed an instance of L<HTTP::Request>.
+
+Since only L</method>, L</uri>, L</headers>, and L</body>
+can be determined from L<HTTP::Request>,
+a hashref can be passed as a second parameter
+containing L</cb> and L</params>.
+
+=cut
+
+sub from_http_message {
+  my ($self, $req, $extra) = @_;
+  my $args = {
+    method  => $req->method,
+    uri     => $req->uri,
+    headers => $self->_hash_http_headers($req->headers),
+    body    => $req->content,
+    (ref($extra) eq 'HASH' ? %$extra : ()),
+  };
+  return $args;
+}
+
 =method args
 
 Returns a list of arguments that can be passed to
@@ -156,6 +180,29 @@ sub send {
   &AnyEvent::HTTP::http_request( $self->args );
 }
 
+=method to_http_message
+
+Returns an instance of L<HTTP::Request>
+to provide additional functionality.
+
+B<Note> that the L</cb> will not be included in the L<HTTP::Request> object
+(nor any L</params> that are not part of the actual request message).
+
+=cut
+
+sub to_http_message {
+  my ($self) = @_;
+  require HTTP::Request;
+
+  my $res = HTTP::Request->new(
+    $self->method,
+    $self->uri,
+    [ %{ $self->headers } ],
+    $self->body
+  );
+  return $res;
+}
+
 1;
 
 =for test_synopsis
@@ -209,14 +256,14 @@ You can then call L</send> to actually make the request
 (via L<AnyEvent::HTTP/http_request>),
 or L</args> to get the list of arguments the object would pass.
 
-=head1 TODO
-
-=for :list
-* Provide conversion to/from more featureful L<HTTP::Request>
+It can also be converted L<from|/from_http_message> or L<to|/to_http_message>
+the more featureful
+L<HTTP::Request>.
 
 =head1 SEE ALSO
 
 =for :list
 * L<AnyEvent::HTTP::Message> (base class)
+* L<HTTP::Request> - More featureful object
 
 =cut

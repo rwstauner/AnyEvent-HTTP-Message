@@ -2,6 +2,8 @@ Revision history for AnyEvent-HTTP-Message
 
 {{$NEXT}}
 
+  - Enable conversion from/to HTTP::Message objects
+
   - Fix error messages when parse_args gets the wrong number of arguments.
 
   - Fix module name copy/paste error in Response Synopsis pod

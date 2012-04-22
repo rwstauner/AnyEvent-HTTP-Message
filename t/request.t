@@ -1,6 +1,8 @@
 use strict;
 use warnings;
 use Test::More 0.88;
+use lib 't/lib';
+use AEHTTP_Tests;
 
 my $mod = 'AnyEvent::HTTP::Request';
 eval "require $mod" or die $@;
@@ -65,6 +67,14 @@ foreach my $args ( [], [1,2], [1,2,3,4] ){
 
   is $req->cb->(), 'ugly', 'ugly duckling';
   test_send($req);
+
+  test_http_message $req, sub {
+    my $msg = shift;
+    is $msg->method, 'POST', 'method';
+    is $msg->uri, 'scheme://host/path', 'uri';
+    is $msg->header('user_agent'), 'Any-Thing/0.1', 'ua header';
+    is $msg->content, 'rub a dub', 'body/content';
+  };
 }
 
 # empty params
@@ -94,6 +104,14 @@ foreach my $args ( [], [1,2], [1,2,3,4] ){
 
   is $req->cb->(), 'fbbq', 'callback works';
   test_send($req);
+
+  test_http_message $req, sub {
+    my $msg = shift;
+    is $msg->method, 'FOO', 'method';
+    is $msg->uri, '//bar/baz', 'uri';
+    is $msg->header('QUX'), '42', 'single header';
+    is $msg->content, '', 'body/content (empty string)';
+  };
 }
 
 # construct via hashref
@@ -141,7 +159,41 @@ foreach my $args ( [], [1,2], [1,2,3,4] ){
   is $args[-1]->(), 'yee haw', 'correct callback results';
 
   test_send($req);
+
+  test_http_message $req, sub {
+    my $msg = shift;
+    is $msg->method, 'YAWN', 'method';
+    is $msg->uri, 'horse://sense', 'uri';
+    is $msg->header('Wa'), 'hoo', 'single header';
+    is $msg->header('X-Wa'), 'x-hoo', 'single header';
+    is $msg->content, 'by cowboy', 'body/content';
+  };
 }
+
+test_http_message sub {
+  my $msg = new_ok('HTTP::Request', [
+    GET => 'blue://buildings',
+    [
+      x_rain     => 'king',
+      user_agent => 'perfect',
+      User_Agent => 'round here',
+    ],
+    'anna begins',
+  ]);
+
+  my $suffix = 'from HTTP::Request';
+  my $req = new_ok($mod, [$msg]);
+  is $req->method, 'GET', "method $suffix";
+  is $req->uri, 'blue://buildings', "uri $suffix";
+  is $req->body, 'anna begins', "body $suffix";
+  is_deeply
+    $req->headers,
+    {
+      'x-rain'     => 'king',
+      'user-agent' => 'perfect,round here',
+    },
+    "converted headers $suffix";
+};
 
 done_testing;
 
