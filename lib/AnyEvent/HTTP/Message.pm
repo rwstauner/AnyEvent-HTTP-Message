@@ -40,6 +40,9 @@ sub new {
   $self->{body} = delete $self->{content}
     if exists $self->{content};
 
+  $self->{body} = ''
+    if !defined $self->{body};
+
   $self->{headers} = $self->{headers}
     ? $class->_normalize_headers($self->{headers})
     : {};

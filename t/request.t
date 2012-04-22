@@ -93,8 +93,8 @@ foreach my $args ( [], [1,2], [1,2,3,4] ){
   is $req->uri, '//bar/baz', 'request uri';
   is $req->cb, $cb, 'callback';
 
-  is $req->body, undef, 'no content';
-  is $req->content, undef, 'content alias';
+  is $req->body, '', 'no content';
+  is $req->content, '', 'content alias';
 
   is_deeply $req->params, {}, 'empty params';
   is_deeply $req->headers, {}, 'empty headers';
