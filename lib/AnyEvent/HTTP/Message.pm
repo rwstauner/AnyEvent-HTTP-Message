@@ -123,7 +123,7 @@ sub content { $_[0]->body }
   # same as $message->header->{'user-agent'};
 
 Takes the specified key,
-converts C<_> to C<-> and lower-cases it,
+converts underscores to dashes and lower-cases it,
 then returns the value of that message header.
 
 =cut
@@ -134,6 +134,7 @@ sub header {
   return $self->headers->{ lc $h };
 }
 
+# ensure keys are stored with dashes (not underscores) and lower-cased
 sub _normalize_headers {
   my ($self, $headers) = @_;
   my $norm = {};

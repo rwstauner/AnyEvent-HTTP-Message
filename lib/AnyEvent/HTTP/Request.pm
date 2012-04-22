@@ -233,7 +233,7 @@ my ($uri, $body, %headers, %params);
 
 =head1 SYNOPSIS
 
-  # parses the same argument list as AnyEvent::HTTP::http_request:
+  # parses the same argument list as AnyEvent::HTTP::http_request
   my $req = AnyEvent::HTTP::Request->new(
     POST => $uri,
     body => $body,
@@ -246,7 +246,7 @@ my ($uri, $body, %headers, %params);
   $req->header('user-agent');
   printf STDERR "URI: %s\n", $req->uri;
 
-  # can be upgraded to an HTTP::Request object:
+  # can be upgraded to an HTTP::Request object
   my $http_req = $req->to_http_message;
 
 =head1 DESCRIPTION

@@ -169,6 +169,7 @@ my ($uri);
 
 =head1 SYNOPSIS
 
+  # parses argument list passed to AnyEvent::HTTP::http_request callback
   AnyEvent::HTTP::http_request(
     GET => $uri,
     sub {
