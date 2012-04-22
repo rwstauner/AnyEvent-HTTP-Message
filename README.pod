@@ -10,7 +10,7 @@ AnyEvent::HTTP::Message - Lightweight objects for AnyEvent::HTTP Request/Respons
 
 =head1 VERSION
 
-version 0.100
+version 0.300
 
 =head1 SYNOPSIS
 
@@ -36,14 +36,37 @@ L<AnyEvent::HTTP::Response>
 
 =head2 new
 
-The constructor accepts either a single hashref of named arguments,
-or a specialized list of arguments that will be passed to
-a the L</parse_args> method (which must be defined by the subclass).
+The constructor accepts either:
+
+=over 4
+
+=item *
+
+a single hashref of named arguments
+
+=item *
+
+an instance of an appropriate subclass of L<HTTP::Message> (with an optional hashref of additional parameters)
+
+=item *
+
+or a specialized list of arguments that will be passed to L</parse_args> (which must be defined by the subclass).
+
+=back
 
 =head2 parse_args
 
 Called by the constructor
-when L</new> is not called with a single hashref.
+when L</new> is called with
+a list of arguments.
+
+Must be customized by subclasses.
+
+=head2 from_http_message
+
+Called by the constructor
+when L</new> is called with
+an instance of a L<HTTP::Message> subclass.
 
 Must be customized by subclasses.
 
@@ -69,7 +92,7 @@ Message headers (hashref)
   # same as $message->header->{'user-agent'};
 
 Takes the specified key,
-converts C<_> to C<-> and lower-cases it,
+converts underscores to dashes and lower-cases it,
 then returns the value of that message header.
 
 =head1 SUPPORT

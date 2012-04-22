@@ -2,6 +2,8 @@ Revision history for AnyEvent-HTTP-Message
 
 {{$NEXT}}
 
+0.300     2012-04-22T22:32:36Z
+
   [Backwards Incompatible Changes]
   - For consistency/clarity/simplicity $request->params
     no longer includes 'body' and 'headers'.  Use the accessor methods.
