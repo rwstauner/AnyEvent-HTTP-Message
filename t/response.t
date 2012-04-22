@@ -85,7 +85,7 @@ foreach my $args ( [1], [1,2,3] ){
 
   test_http_message $res, sub {
     my $msg = shift;
-    ok!$msg->is_success, '413 is a bad request';
+    ok !$msg->is_success, '413 is a bad request';
     is $msg->header( $_ ), 'less useful than req', 'header via HTTP::Headers'
       for @single;
 
