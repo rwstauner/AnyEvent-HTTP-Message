@@ -21,8 +21,8 @@ sub have_http_message () {
 sub test_http_message (;$&) {
   my $sub = pop;
   my $msg = shift;
-  ::subtest http_message => sub {
-    ::plan skip_all => "$mod required for these tests"
+  ::subtest(http_message => sub {
+    ::plan(skip_all => "$mod required for these tests")
       if !have_http_message;
 
     my @args;
@@ -31,7 +31,7 @@ sub test_http_message (;$&) {
       ::isa_ok($args[0], $mod);
     }
     $sub->(@args);
-  };
+  });
 }
 
 1;
