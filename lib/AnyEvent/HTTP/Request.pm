@@ -190,6 +190,8 @@ you can derefernce the return value:
 
   $req->cb->($body, $headers);
 
+or use L</respond_with>.
+
 =cut
 
 sub method  { $_[0]->{method} }
@@ -198,12 +200,38 @@ sub cb      {
   my $self = shift;
   $self->_error(
     q[cb() is a read-only accessor (for consistency and to avoid confusion).],
-    q[To execute the callback dereference it: $req->cb->($body, \%headers)]
+    q[To execute the callback dereference it or use respond_with().]
   )
     if @_;
   return $self->{cb};
 }
 sub params  { $_[0]->{params} ||= {} }
+
+=method respond_with
+
+  $req->respond_with($body, \%headers);
+  $req->respond_with(AnyEvent::HTTP::Response->new(@args));
+  $req->respond_with(HTTP::Response->new($code, $message, \@headers, $body));
+
+Simulate a response by calling L</cb>.
+This method is mostly useful for testing,
+but then again so is the whole module.
+
+For convenience this method can accept an instance of
+L<AnyEvent::HTTP::Response>
+or any list of arguments that can be passed to
+L<AnyEvent::HTTP::Response/new>.
+
+=cut
+
+sub respond_with {
+  my $self = shift;
+  my ($res) = @_; # don't shift
+  require AnyEvent::HTTP::Response;
+  $res =  AnyEvent::HTTP::Response->new(@_)
+    unless do { local $@; eval { $res->isa('AnyEvent::HTTP::Response') } };
+  return $self->cb->($res->args);
+}
 
 =method send
 

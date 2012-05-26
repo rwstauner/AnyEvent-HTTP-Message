@@ -22,7 +22,7 @@ foreach my $args ( [], [1,2], [1,2,3,4] ){
 
 # basic request
 {
-  my $cb = sub { 'ugly' };
+  my $cb = sub { 'ugly'.($_[0]||'') };
   my $req = new_ok($mod, [
     post => 'scheme://host/path',
     persistent => 1,
@@ -60,6 +60,9 @@ foreach my $args ( [], [1,2], [1,2,3,4] ){
   is eval { $req->cb("body", {}); 1 }, undef, 'error calling cb with args';
   like $@, qr/cb\(\) is a read-only accessor/, 'error message explains usage';
 
+  is eval { $req->respond_with(1, 2, 3); 1 }, undef, 'error calling respond_with using bad args';
+  like $@, qr/AnyEvent::HTTP::Response error: expects two arguments/, 'error message explains usage';
+
   my @args = $req->args;
   is_deeply
     [ @args[0, 1, 10] ],
@@ -76,6 +79,7 @@ foreach my $args ( [], [1,2], [1,2,3,4] ){
     'params in the middle of args';
 
   is $req->cb->(), 'ugly', 'ugly duckling';
+  is $req->respond_with('duckling', {}), 'uglyduckling', 'respond_with()';
   test_send($req);
 
   test_http_message $req, sub {
@@ -89,7 +93,7 @@ foreach my $args ( [], [1,2], [1,2,3,4] ){
 
 # empty params
 {
-  my $cb = sub { 'fbbq' };
+  my $cb = sub { 'fbbq' . $_[0] . ref($_[1]) };
   my $req = new_ok($mod, [FOO => '//bar/baz', $cb]);
 
   is $req->method, 'FOO', 'request method';
@@ -106,7 +110,9 @@ foreach my $args ( [], [1,2], [1,2,3,4] ){
   is_deeply $req->params, {}, 'params still empty (headers not included)';
   is_deeply $req->headers, {qux => 42}, 'headers no longer empty';
 
-  is $req->cb->(), 'fbbq', 'callback works';
+  is $req->cb->(Body => {}), 'fbbqBodyHASH', 'callback works';
+  is $req->respond_with(AnyEvent::HTTP::Response->new({body => 11, headers => {}})),
+    'fbbq11HASH', 'respond_with a Response instance';
   test_send($req);
 
   test_http_message $req, sub {
@@ -185,8 +191,9 @@ test_http_message sub {
     'anna begins',
   ]);
 
+  my $cb = sub { 'counting ' . shift };
   my $suffix = 'from HTTP::Request';
-  my $req = new_ok($mod, [$msg]);
+  my $req = new_ok($mod, [$msg, {cb => $cb}]);
   is $req->method, 'GET', "method $suffix";
   is $req->uri, 'blue://buildings', "uri $suffix";
   is $req->body, 'anna begins', "body $suffix";
@@ -197,6 +204,11 @@ test_http_message sub {
       'user-agent' => 'perfect,round here',
     },
     "converted headers $suffix";
+
+  is $req->cb, $cb, 'cb passed in second hashref';
+  require HTTP::Response;
+  is $req->respond_with(HTTP::Response->new(200, 'OK', [], 'crows')),
+    'counting crows', 'pass HTTP::Response to respond_with()';
 };
 
 done_testing;

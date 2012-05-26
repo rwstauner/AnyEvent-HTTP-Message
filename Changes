@@ -3,6 +3,7 @@ Revision history for AnyEvent-HTTP-Message
 {{$NEXT}}
 
   - Throw error if arguments are passed to $req->cb() to avoid confusion.
+  - Define $req->respond_with(@res) to pass a response to the cb.
 
 0.300     2012-04-22T22:32:36Z
 
