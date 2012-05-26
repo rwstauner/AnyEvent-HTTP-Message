@@ -181,11 +181,28 @@ This hashref is essentially I<user-agent> parameters.
 Callback subroutine reference
 (last argument to L<AnyEvent::HTTP/http_request>)
 
+B<Note>: For consistency with the other attributes
+(and to avoid confusion with other modules)
+this is a read-only accessor and will C<croak> if passed any arguments.
+
+If you intend to execute the callback (to simulate a response)
+you can derefernce the return value:
+
+  $req->cb->($body, $headers);
+
 =cut
 
 sub method  { $_[0]->{method} }
 sub uri     { $_[0]->{uri}    }
-sub cb      { $_[0]->{cb}     }
+sub cb      {
+  my $self = shift;
+  $self->_error(
+    q[cb() is a read-only accessor (for consistency and to avoid confusion).],
+    q[To execute the callback dereference it: $req->cb->($body, \%headers)]
+  )
+    if @_;
+  return $self->{cb};
+}
 sub params  { $_[0]->{params} ||= {} }
 
 =method send

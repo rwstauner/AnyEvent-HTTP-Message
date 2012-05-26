@@ -57,6 +57,9 @@ foreach my $args ( [], [1,2], [1,2,3,4] ){
 
   is $req->cb, $cb, 'callback';
 
+  is eval { $req->cb("body", {}); 1 }, undef, 'error calling cb with args';
+  like $@, qr/cb\(\) is a read-only accessor/, 'error message explains usage';
+
   my @args = $req->args;
   is_deeply
     [ @args[0, 1, 10] ],
