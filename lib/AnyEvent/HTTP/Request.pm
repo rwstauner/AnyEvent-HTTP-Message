@@ -186,7 +186,7 @@ B<Note>: For consistency with the other attributes
 this is a read-only accessor and will C<croak> if passed any arguments.
 
 If you intend to execute the callback (to simulate a response)
-you can derefernce the return value:
+you can dereference the return value:
 
   $req->cb->($body, $headers);
 
