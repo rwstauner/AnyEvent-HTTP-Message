@@ -216,6 +216,7 @@ done_testing;
 # AE http_request overridden above
 sub test_send {
   my $req = shift;
+  local $Test::Builder::Level = $Test::Builder::Level + 1;
   my $sent = $req->send();
   is_deeply $sent, $req, 'object should have the same attributes';
   ok $sent != $req, 'but be separate objects';
