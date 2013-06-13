@@ -2,6 +2,8 @@ Revision history for AnyEvent-HTTP-Message
 
 {{$NEXT}}
 
+0.302     2013-06-13T03:05:24Z
+
   - Don't pass Content-Length header to AnyEvent::HTTP to avoid persisting
     the header incorrectly.  Closes rt-85665.
 
