@@ -181,27 +181,37 @@ foreach my $args ( [], [1,2], [1,2,3,4] ){
 }
 
 test_http_message sub {
-  my $msg = new_ok('HTTP::Request', [
-    GET => 'blue://buildings',
-    [
+  # The POST function from Common automatically adds Content-Length header.
+  require HTTP::Request::Common;
+  my $msg = HTTP::Request::Common::POST(
+    'blue://buildings',
+    (
       x_rain     => 'king',
       user_agent => 'perfect',
       User_Agent => 'round here',
-    ],
-    'anna begins',
-  ]);
+      content_type => 'text/plain',
+    ),
+    content => 'anna begins',
+  );
+  isa_ok($msg, 'HTTP::Request');
 
   my $cb = sub { 'counting ' . shift };
   my $suffix = 'from HTTP::Request';
   my $req = new_ok($mod, [$msg, {cb => $cb}]);
-  is $req->method, 'GET', "method $suffix";
+  is $req->method, 'POST', "method $suffix";
   is $req->uri, 'blue://buildings', "uri $suffix";
   is $req->body, 'anna begins', "body $suffix";
+
+  is $msg->header('content-length'), 11,
+    'message object has content length header';
+
   is_deeply
     $req->headers,
     {
       'x-rain'     => 'king',
       'user-agent' => 'perfect,round here',
+      'content-type' => 'text/plain',
+      # don't pass 'content-length' to AEH
     },
     "converted headers $suffix";
 

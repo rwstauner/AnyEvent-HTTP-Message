@@ -118,6 +118,12 @@ sub from_http_message {
     body    => $req->content,
     (ref($extra) eq 'HASH' ? %$extra : ()),
   };
+
+  # rt-85665: AE:H will provide it's own content-length.
+  # If you provide your own it may persist incorrectly across redirects.
+  delete $args->{headers}{$_}
+    for qw( content-length );
+
   return $args;
 }
 

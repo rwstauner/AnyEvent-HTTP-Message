@@ -2,6 +2,9 @@ Revision history for AnyEvent-HTTP-Message
 
 {{$NEXT}}
 
+  - Don't pass Content-Length header to AnyEvent::HTTP to avoid persisting
+    the header incorrectly.  Closes rt-85665.
+
 0.301     2012-05-27T05:49:46Z
 
   - Throw error if arguments are passed to $req->cb() to avoid confusion.
